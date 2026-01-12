@@ -4,27 +4,27 @@ import sys
 def get_github(username):
     """Fetch GitHub user data from API""" 
     try:
-        response = requests.get("https://api.github.com/users/{username}")
+        response = requests.get(f"https://api.github.com/users/{username}")
         if response.status_code == 404: #404 == User Not Found
             return None
         elif response.status_code == 200: #200 == Found/OK
             return response.json()
         else:
             response.raise_for_status()
-    except response.RequestException as e:
-        print(f"Error conneting to GitHub API: {e}")
+    except requests.RequestException as e:
+        print(f"Error connecting to GitHub API: {e}")
         return None
         
 def validate(username):
     """Validating GitHub username format"""
     if  not username or username.strip() == "":
         return False, "Username cannot be empty"
-    elif not username.replace("-", "").isalnum():
+    username = username.strip()
+    if not username.replace("-", "").isalnum():
         return False, "User name can only contain letters, numbers and hyphens"
-    elif len(username) > 39:
+    if len(username) > 39:
         return False, "Username too long (max 39 characters)"    
-    else:
-        return True, username
+    return True, username
     
 def get_interactive():
     """Get username with validation and re-prompting"""
@@ -46,13 +46,13 @@ def main():
         username = sys.argv[1]
         is_valid, result = validate(username)
         if not is_valid:
-            return f"Error: {result}"
+            print(f"Error: {result}")
             sys.exit(1)
         username = result
     else:
         username = get_interactive()
         if username is None:
-            return f"Exiting..."
+            print(f"Exiting...")
             sys.exit(0)
 
     print(f"Fetching data for '{username}'..")
