@@ -26,3 +26,16 @@ def validate(username):
     else:
         return True, username
     
+def get_interactive(username):
+    """Get username with validation and re-prompting"""
+    while True:
+        username = input("Enter Username: ")
+        is_valid, result = validate(username)
+        if is_valid:
+            return result
+        else:
+            print(f"Invalid input!: {result}")
+            retry = input("Try Again? (y/n): ").lower()
+            if retry != "y":
+                return None
+
